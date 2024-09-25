@@ -160,7 +160,19 @@ void traite_car(char c){
  * (Judicieux d'tiliser memmove definie dans string.h)
  */
 void defilement(void){
-    /*CODE*/
+    // Copie chaque ligne sur la ligne précédente, en commençant par la deuxième ligne depuis le bas
+    for (int lig = 1; lig < LIG_MAX; lig++) {
+        for (int col = 0; col < COL_MAX; col++) {
+            uint16_t* source = ptr_mem(lig, col);
+            uint16_t* destination = ptr_mem(lig - 1, col);
+            *destination = *source;
+        }
+    }
+
+    // Efface la dernière ligne en la remplissant d'espaces
+    for (int col = 0; col < 80; col++) {
+        ecrit_car(24, col, ' ',15, 0, 5);
+    }
 }
 
 /*
