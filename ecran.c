@@ -180,5 +180,13 @@ void defilement(void){
  * Utilise les fonctions precedentes
  */
 void console_putbytes(const char *s, int len){
-    /*CODE*/
+    for (int i = 0; i < len; i++) {
+        traite_car(s[i]);
+    }
+}
+
+// Cette fonction pourrait être utilisée pour la mise en place initiale et les tests
+void init_screen() {
+    efface_ecran();
+    place_curseur(0, 0);
 }
