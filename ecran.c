@@ -2,10 +2,8 @@
 
 #include <stdio.h> 
 #include "ecran.h"
-/* CR begin */
-// #include <stdint.h>
+#include "cpu.h"  // Cette bibliothèque inclut les fonctions inb et outb
 #include <inttypes.h>
-/* CR end */
 
 
 // ************** CONSTANT DEFINITION **************
@@ -13,6 +11,9 @@
 #define LIG_MAX 25 // Nombre de ligne maximale
 #define COL_MAX 80 // Nombre de colonne maximale
 #define MEMOIRE_VIDEO_BASE 0xB8000 //adresse de base de la memoire video CGA
+
+#define COMMAND_PORT 0x3D4
+#define DATA_PORT 0x3D5
 
 
 static uint32_t position_colonne =0 ;
@@ -81,14 +82,12 @@ void efface_ecran(void){
  * Place le curseur a la position donnée 
  */
 
-void place_curseur(uint32_t lig, uint32_t col){
-    uint16_t position = col + lig * COL_MAX;
-    // Envoie de la commande 0x0F sur la partie basse
-    outb(0x0F, 0x3D4);
-    outb(position, 0x3D5);
-    // Envoie de la commande 0x0F sur la partie basse
-    outb(0x0E, 0x3D4);
-    outb(position >> 8, 0x3D5);
+void place_curseur(uint32_t lig, uint32_t col) {
+    uint16_t pos = lig * COL_MAX + col;
+    outb(0x0F, COMMAND_PORT);  // Envoi de la commande pour la partie basse
+    outb((uint8_t)(pos & 0xFF), DATA_PORT);
+    outb(0x0E, COMMAND_PORT);  // Envoi de la commande pour la partie haute
+    outb((uint8_t)((pos >> 8) & 0xFF), DATA_PORT);
 }
 
 /*
@@ -135,21 +134,6 @@ void traite_car(char c){
             break;
     }
 
-    // Vérification des limites
-    if (position_colonne >= COL_MAX) {
-        position_colonne = 0;
-        position_ligne++;
-    }
-    if (position_ligne >= LIG_MAX) {
-
-        // Gestion du défilement
-        memmove(ptr_mem(0, 0), ptr_mem(1, 0), COL_MAX * (LIG_MAX - 1) * 2);
-        for (uint32_t x = 0; x < COL_MAX; x++) {
-            ecrit_car(LIG_MAX - 1, x, ' ', 15, 0, 5);
-        }
-        position_ligne = LIG_MAX - 1;
-    }
-
     place_curseur(position_ligne, position_colonne);
 
 
@@ -176,8 +160,7 @@ void defilement(void){
 }
 
 /*
- * Solution finale
- * Utilise les fonctions precedentes
+ * Solution finale : Utilise les fonctions precedentes
  */
 void console_putbytes(const char *s, int len){
     for (int i = 0; i < len; i++) {
