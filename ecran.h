@@ -7,6 +7,36 @@
 #include <inttypes.h> // for uintx_t
 
 
+// ************** CONSTANT DEFINITION **************
+
+#define LIG_MAX 25 // Nombre de ligne maximale
+#define COL_MAX 80 // Nombre de colonne maximale
+#define MEMOIRE_VIDEO_BASE 0xB8000 //adresse de base de la memoire video CGA
+
+#define COMMAND_PORT 0x3D4
+#define DATA_PORT 0x3D5
+
+
+// ************** DATA STRUCTURES DEFINITION **************
+enum {
+    NOIR,
+    BLEU,
+    VERT,
+    CYAN,
+    ROUGE,
+    MAGENTA,
+    MARRON,
+    GRIS,
+    GRIS_FONCE,
+    BLEU_CLAIR,
+    VERT_CLAIR,
+    CYAN_CLAIR,
+    ROUGE_CLAIR,
+    MAGENTA_CLAIR,
+    JAUNE,
+    BLANC
+};
+
 
 //************** Prototype of our functions **************
 

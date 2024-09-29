@@ -4,41 +4,14 @@
 #include "ecran.h"
 #include "cpu.h"  // Cette bibliothèque inclut les fonctions inb et outb
 #include <inttypes.h>
+#include <string.h> // pour memmove
 
 
 // ************** CONSTANT DEFINITION **************
 
-#define LIG_MAX 25 // Nombre de ligne maximale
-#define COL_MAX 80 // Nombre de colonne maximale
-#define MEMOIRE_VIDEO_BASE 0xB8000 //adresse de base de la memoire video CGA
-
-#define COMMAND_PORT 0x3D4
-#define DATA_PORT 0x3D5
-
-
 static uint32_t position_colonne =0 ;
 static uint32_t position_ligne =0 ;
 
-
-// ************** DATA STRUCTURES DEFINITION **************
-enum {
-    NOIR,
-    BLEU,
-    VERT,
-    CYAN,
-    ROUGE,
-    MAGENTA,
-    MARRON,
-    GRIS,
-    GRIS_FONCE,
-    BLEU_CLAIR,
-    VERT_CLAIR,
-    CYAN_CLAIR,
-    ROUGE_CLAIR,
-    MAGENTA_CLAIR,
-    JAUNE,
-    BLANC
-};
 
 // ************** CODE IMPLEMENTATION **************
 
@@ -48,8 +21,7 @@ enum {
  */
 
 uint16_t *ptr_mem(uint32_t lig, uint32_t col ){
-    uint32_t *pos = (uint32_t*) (MEMOIRE_VIDEO_BASE + 2*(lig*80 + col));
-    return (uint16_t *) pos;
+    return (uint16_t*) (MEMOIRE_VIDEO_BASE + 2 * (lig * COL_MAX + col));
 }
 
 /*
@@ -58,10 +30,15 @@ uint16_t *ptr_mem(uint32_t lig, uint32_t col ){
  */
 
 void ecrit_car(uint32_t lig, uint32_t col, char c,  uint32_t couleur_caractere, uint32_t couleur_fond, uint32_t clignotement){
+
     uint16_t *adresse_memoire = ptr_mem(lig, col); //adresse memoire du curseur
-    uint16_t valeur = (uint16_t) c | couleur_caractere << 8 | couleur_fond << 12| clignotement  << 15; //valeur du caractère à afficher
+    uint16_t valeur = (uint16_t) c 
+                    | couleur_caractere << 8 
+                    | couleur_fond << 12
+                    | clignotement  << 15; //valeur du caractère à afficher
     *adresse_memoire = valeur;
 }
+
 
 
 /*
@@ -90,6 +67,7 @@ void place_curseur(uint32_t lig, uint32_t col) {
     outb((uint8_t)((pos >> 8) & 0xFF), DATA_PORT);
 }
 
+
 /*
  * Traite un caractere donné (affiche si c'est un caractere normal ou 
  * implemante l'effet voulu si c'est un caractere de controle) 
@@ -106,11 +84,10 @@ void traite_car(char c){
         case '\t':  // Tabulation
             position_colonne = (position_colonne + 8) & ~(8 - 1);
             break;
-        
-        //Retour à la ligne et col=0
+
         case '\n':  // Nouvelle ligne
-            position_ligne = 0;
             position_ligne++;
+            position_colonne = 0;  // Retour à la première colonne
             break;
 
         //Efface ecran et place curseur en (0;0)
@@ -128,10 +105,15 @@ void traite_car(char c){
         //Par defaut
         default:
             if (c >= 32 && c <= 126) {
-                ecrit_car(position_ligne, position_colonne, c, 15, 0, 5);
+                ecrit_car(position_ligne, position_colonne, c, BLANC, NOIR, 5);
                 position_colonne++;
             }
             break;
+    }
+
+    if (position_ligne >= LIG_MAX) {
+        defilement();
+        position_ligne = LIG_MAX - 1;
     }
 
     place_curseur(position_ligne, position_colonne);
@@ -140,24 +122,20 @@ void traite_car(char c){
 }
 
 /*
- * Remonte d'une ligne l'affichage de l'ecran
+ * Remonte d'une ligne l'affichage de l'ecran lorsque celui ci est rempli
  * (Judicieux d'tiliser memmove definie dans string.h)
  */
 void defilement(void){
-    // Copie chaque ligne sur la ligne précédente, en commençant par la deuxième ligne depuis le bas
-    for (int lig = 1; lig < LIG_MAX; lig++) {
-        for (int col = 0; col < COL_MAX; col++) {
-            uint16_t* source = ptr_mem(lig, col);
-            uint16_t* destination = ptr_mem(lig - 1, col);
-            *destination = *source;
-        }
-    }
+    memmove((void*)MEMOIRE_VIDEO_BASE, 
+            (void*)(MEMOIRE_VIDEO_BASE + 2 * COL_MAX), 
+            2 * COL_MAX * (LIG_MAX - 1)); // Utilisation de memmove pour déplacer tout le contenu de l'écran d'une ligne vers le haut
 
-    // Efface la dernière ligne en la remplissant d'espaces
-    for (int col = 0; col < 80; col++) {
-        ecrit_car(24, col, ' ',15, 0, 5);
+    for (int col = 0; col < COL_MAX; col++) {
+        ecrit_car(LIG_MAX - 1, col, ' ', BLANC, NOIR, 0); // Efface la dernière ligne (ligne 24) en la remplissant d'espaces
     }
 }
+
+
 
 /*
  * Solution finale : Utilise les fonctions precedentes
