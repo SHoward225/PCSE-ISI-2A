@@ -1,6 +1,7 @@
 #include <cpu.h>
 #include <inttypes.h>
 #include "ecran.h"
+#include "processus.h"
 
 // on peut s'entrainer a utiliser GDB avec ce code de base
 // par exemple afficher les valeurs de x, n et res avec la commande display
@@ -31,7 +32,7 @@ void kernel_start(void)
 
 
     // Efface l'écran avant de commencer
-    efface_ecran();
+    // efface_ecran();
 
     // ---------------- Test de console_putbytes ----------------
     // // Affiche une chaîne à l'écran en testant console_putbytes
@@ -43,29 +44,31 @@ void kernel_start(void)
     // traite_car('\f'); // Efface l'écran (caractère form feed)
 
     // Affiche à nouveau du texte après l'effacement
-    const char *str2 = "Apres traite_car('\\f')\n";
-    console_putbytes(str2, 23);
+    // const char *str2 = "Apres traite_car('\\f')\n";
+    // console_putbytes(str2, 23);
 
-    // Test du caractère retour à la ligne
-    traite_car('\n');
-    const char *str3 = "Texte apres retour a la ligne";
-    console_putbytes(str3, 29);
+    // // Test du caractère retour à la ligne
+    // traite_car('\n');
+    // const char *str3 = "Texte apres retour a la ligne";
+    // console_putbytes(str3, 29);
 
-    // // Test du caractère backspace
-    traite_car('\n');
-    console_putbytes("123456789", 9);
-    traite_car('\b');  // Supprime le dernier caractère
+    // // // Test du caractère backspace
+    // traite_car('\n');
+    // console_putbytes("123456789", 9);
+    // traite_car('\b');  // Supprime le dernier caractère
 
-    // ---------------- Test de defilement ----------------
-    // Remplir l'écran pour provoquer un défilement
-    for (int i = 0; i < 30; i++) {
-        const char *ligne = "Remplissage de l'ecran pour defilement...\n";
-        console_putbytes(ligne, 42);  // 42 étant la longueur de la chaîne
-    }
+    // // ---------------- Test de defilement ----------------
+    // // Remplir l'écran pour provoquer un défilement
+    // for (int i = 0; i < 30; i++) {
+    //     const char *ligne = "Remplissage de l'ecran pour defilement...\n";
+    //     console_putbytes(ligne, 42);  // 42 étant la longueur de la chaîne
+    // }
 
-    // Placer le curseur après le défilement
-    place_curseur(LIG_MAX - 1, 0);
+    // // Placer le curseur après le défilement
+    // place_curseur(LIG_MAX - 1, 0);
 
+    init_processus();  // Initialise la table des processus
+    idle();  // Démarre avec le processus idle
 
 }
 
