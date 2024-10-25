@@ -105,7 +105,7 @@ void traite_car(char c){
         //Par defaut
         default:
             if (c >= 32 && c <= 126) {
-                ecrit_car(position_ligne, position_colonne, c, BLANC, NOIR, 5);
+                ecrit_car(position_ligne, position_colonne, c, BLANC, NOIR, 0);
                 position_colonne++;
             }
             break;
@@ -150,4 +150,19 @@ void console_putbytes(const char *s, int len){
 void init_screen() {
     efface_ecran();
     place_curseur(0, 0);
+}
+
+
+//====================================== GESTION DU TEMPS==========================================
+
+void ecrit_temps(const char* temps, int taille) {
+    
+    // Affiche le temps en haut à droite de l'écran
+    uint32_t ligne = 0;
+    uint32_t colonne = COL_MAX - taille;
+
+    for (int i = 0; i < taille; i++) {
+        ecrit_car(ligne, colonne + i, temps[i], BLANC, NOIR, 0);
+    }
+    
 }

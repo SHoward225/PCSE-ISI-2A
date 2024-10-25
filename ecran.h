@@ -54,4 +54,6 @@ void defilement(void);
 
 void console_putbytes(const char *s, int len);
 
+void ecrit_temps(const char* temps, int taille);
+
 #endif
