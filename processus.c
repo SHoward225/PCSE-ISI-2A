@@ -1,92 +1,59 @@
-/**
- * \file processus.c
- * \brief Gère les structures des processus, leur création et l'ordonnancement.
- * \author konan-junior.kouadio@grenoble-inp.org
- * \date 11/10/2024
- */
 
 #include <stdio.h>
+#include <tinyalloc.h>
+
+#include "ordonnanceur.h"
 #include "processus.h"
-#include <string.h>  // Pour `strcpy`
+#include "cpu.h"
+#include "ctx_sw.h"
 
-// Table des processus (statiquement définie)
-processus_t processus_table[2];
-
-// Pointeur vers le processus actuellement élu
-static processus_t* processus_elu = &processus_table[0];  // idle est élu au départ
+#define TAILLE_PILE 512  // Taille de la pile pour chaque processus
+extern processus_t* proc1_process;
 
 
-/***********************************************************************************
- * 
- *                  Fonction pour initialiser les processus
- * 
- * *********************************************************************************
-**/ 
+processus_t* idle_process;
+processus_t* proc1_process;
 
-void init_processus(void) {
+// Fonction pour initialiser un processus avec les informations fournies
+void init_processus(processus_t* proc, uint32_t pid, char* nom, void (*fonction)(void)) {
+    proc->pid = pid;
+    proc->nom = nom;
+    proc->etat = ACTIVABLE;
 
-    // Initialisation du processus idle (pid 0)
-    processus_table[0].pid = 0;
-    strcpy(processus_table[0].nom, "idle");
-    processus_table[0].etat = ELU;  // Le processus idle est élu au démarrage
+    // Allouer la pile pour le processus
+    proc->pile = (uint32_t*) malloc(TAILLE_PILE * sizeof(uint32_t));
+    proc->pile_base = proc->pile;
 
-    // Initialisation du processus proc1 (pid 1)
-    processus_table[1].pid = 1;
-    strcpy(processus_table[1].nom, "proc1");
-    processus_table[1].etat = ACTIVABLE;  // Proc1 est activable mais pas élu
+    // Préparer la pile pour la première exécution
+    proc->pile[TAILLE_PILE - 1] = (uint32_t) fonction;  // Adresse de la fonction
+    proc->regs.esp = (uint32_t) &proc->pile[TAILLE_PILE - 1];  // ESP pointe vers cette adresse
+    proc->regs.ebx = 0;
+    proc->regs.ebp = 0;
+    proc->regs.esi = 0;
+    proc->regs.edi = 0;
 
+    printf("Processus %s (PID=%u) initialisé avec succès.\n", nom, pid);
 }
-
-
-/***********************************************************************************
- * 
- *                       Fonction d'ordonnancement
- * 
- * *********************************************************************************
-**/ 
-
-void ordonnance(void) {
-    processus_t* processus_suivant;
-
-    // Passage de idle à proc1 et vice-versa
-    if (processus_elu->pid == 0) {
-        processus_suivant = &processus_table[1];  // Passer de idle à proc1
-    } else {
-        processus_suivant = &processus_table[0];  // Passer de proc1 à idle
-    }
-
-    processus_suivant->etat = ELU;
-    processus_elu->etat = ACTIVABLE;
-    
-    ctx_sw(processus_elu->registre, processus_suivant->registre);
-    
-    processus_elu = processus_suivant;  // Mise à jour du processus élu
-}
-
-/***********************************************************************************
- * 
- *                      Fonction du processus idle
- * 
- * *********************************************************************************
-**/ 
 
 void idle(void) {
-    while (1) {
-        printf("[idle] Je passe la main à proc1...\n");
-        ordonnance();
-    }
+    printf("[idle] je tente de passer la main à proc1...\n");
+    ctx_sw(&(idle_process->regs), &(proc1_process->regs));  // Passage de idle à proc1
 }
 
-/***********************************************************************************
- * 
- *                        Fonction du processus proc1
- * 
- * *********************************************************************************
-**/ 
-
 void proc1(void) {
-    while (1) {
-        printf("[proc1] Idle m'a donné la main...\n");
-        ordonnance();  // Passe la main à idle
-    }
+    printf("[proc1] idle m’a donné la main\n");
+    printf("[proc1] j’arr\`ete le système\n");
+    hlt();  // Arrête le système
+}
+
+// Initialiser les processus idle et proc1
+void init_processus_idle_proc1(void) {
+    idle_process = (processus_t*) malloc(sizeof(processus_t));
+    proc1_process = (processus_t*) malloc(sizeof(processus_t));
+    
+    // Initialiser le processus idle (PID 0)
+    init_processus(idle_process, 0, "idle", idle);
+
+    // Initialiser le processus proc1 (PID 1)
+    init_processus(proc1_process, 1, "proc1", proc1);
 }

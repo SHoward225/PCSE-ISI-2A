@@ -1,7 +1,8 @@
+#include "cpu.h"
 #include "ecran.h"  // Pour la gestion de l'ecran
 #include "init.h"   // Pour la gestion du temps
-#include "processus.h"  // Pour la gestion des processus
-#include "cpu.h"
+#include "ordonnanceur.h"
+
 
 // on peut s'entrainer a utiliser GDB avec ce code de base
 // par exemple afficher les valeurs de x, n et res avec la commande display
@@ -69,27 +70,34 @@ void kernel_start(void)
     // // Placer le curseur après le défilement
     // place_curseur(LIG_MAX - 1, 0);
 
-
-    efface_ecran();
-
     // =========================  GESTION DU TEMPS =========================
 
+    // efface_ecran();
+    
+    // // Initialiser le système : PIT, interruptions, etc.
+    // init_system();
 
-    // Initialiser le système : PIT, interruptions, etc.
-    init_system();
-
-    // Boucle infinie pour maintenir le noyau actif
-    while (1) {
-        // Attendre les interruptions, par exemple celles du PIT pour gérer le temps
-        hlt();
-    }
+    // // Boucle infinie pour maintenir le noyau actif
+    // while (1) {
+    //     // Attendre les interruptions, par exemple celles du PIT pour gérer le temps
+    //     hlt();
+    // }
 
     // =========================  GESTION DES PROCESSUS =========================
 
+    efface_ecran();  // Nettoyer l'écran au démarrage
 
+    // Initialisation des processus idle et proc1
+    init_processus_idle_proc1();
 
-    // init_processus();  // Initialise la table des processus
-    // idle();  // Démarre avec le processus idle
+    // Démarrage du processus par défaut (idle)
+    idle();
+
+    // Lancer l'ordonnanceur
+    while (1) {
+        ordonnance();  // Passer au processus suivant
+    }
+
 
 }
 

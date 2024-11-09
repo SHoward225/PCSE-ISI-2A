@@ -9,10 +9,12 @@ static uint32_t secondes = 0;
 // Fonction appelée à chaque interruption générée par le PIT
 void tic_PIT(void) {
 
+    // Envoyer un End Of Interrupt (EOI) au PIC pour signaler la fin de l'interruption
     outb(0x20, 0x20);
+
     static uint32_t compteur = 0;  // Compte le nombre d'interruptions
 
-    printf(" Appel tic PIT %i... \n", compteur);
+    // printf(" Appel tic PIT %i... \n", compteur);
     compteur++;  // Incrémente à chaque appel (chaque interruption)
     
     // Si le compteur atteint 50 (soit 50 interruptions à 50 Hz), on incrémente le temps
