@@ -4,7 +4,7 @@
 #include <inttypes.h>
 
 // Déclaration de la fonction ctx_sw
-extern void ctx_sw(contexte_t* ancien_contexte, contexte_t* nouveau_contexte);
+extern void ctx_sw(uint32_t* ancien_contexte, uint32_t* nouveau_contexte);
 
 #endif
 

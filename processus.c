@@ -32,17 +32,17 @@ void init_processus(processus_t* proc, uint32_t pid, char* nom, void (*fonction)
     proc->regs.esi = 0;
     proc->regs.edi = 0;
 
-    printf("Processus %s (PID=%u) initialisé avec succès.\n", nom, pid);
+    printf("Processus %s (PID=%u) initialise avec succes.\n", nom, pid);
 }
 
 void idle(void) {
-    printf("[idle] je tente de passer la main à proc1...\n");
-    ctx_sw(&(idle_process->regs), &(proc1_process->regs));  // Passage de idle à proc1
+    printf("[idle] je tente de passer la main a proc1...\n");
+            ctx_sw((uint32_t*)&(idle_process->regs), (uint32_t*)&(proc1_process->regs));  // Passage de idle à proc1
 }
 
 void proc1(void) {
-    printf("[proc1] idle m’a donné la main\n");
-    printf("[proc1] j’arr\`ete le système\n");
+    printf("[proc1] idle m’a donne la main\n");
+    printf("[proc1] j’arrete le système\n");
     hlt();  // Arrête le système
 }
 

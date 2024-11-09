@@ -28,5 +28,5 @@ void ordonnance(void) {
     }
 
     // Changement de contexte
-    ctx_sw(&(idle_process->regs), &(proc1_process->regs));
+    ctx_sw((uint32_t*)&(idle_process->regs), (uint32_t*)&(proc1_process->regs));
 }
