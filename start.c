@@ -7,6 +7,8 @@
 // on peut s'entrainer a utiliser GDB avec ce code de base
 // par exemple afficher les valeurs de x, n et res avec la commande display
 
+extern processus_t* processus_actuel;  // Définition réelle de la variable
+
 void kernel_start(void)
 {
 
@@ -85,19 +87,29 @@ void kernel_start(void)
 
     // =========================  GESTION DES PROCESSUS =========================
 
-    efface_ecran();  // Nettoyer l'écran au démarrage
+
+
+// ------------------------------------------------------------------------------
+    // efface_ecran();  // Nettoyer l'écran au démarrage
+
+    // // Initialisation des processus idle et proc1
+    // init_processus_idle_proc1();
+
+    // // Démarrage du processus par défaut (idle)
+    // idle();
+
+    // // Lancer l'ordonnanceur
+    // while (1) {
+    //     ordonnance();  // Passer au processus suivant
+    // }
+
+// ----------------------------------- Test Tourniquet -------------------------------------------
 
     // Initialisation des processus idle et proc1
     init_processus_idle_proc1();
 
     // Démarrage du processus par défaut (idle)
     idle();
-
-    // Lancer l'ordonnanceur
-    while (1) {
-        ordonnance();  // Passer au processus suivant
-    }
-
 
 }
 

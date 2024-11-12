@@ -34,8 +34,12 @@ extern processus_t* proc1_process;
 
 // Fonctions pour initialiser les processus
 void init_processus(processus_t* proc, uint32_t pid, char* nom, void (*fonction)(void));
+
+// Exemple avec 2 processus
 void init_processus_idle_proc1(void);
 void idle(void);
 void proc1(void);
+int32_t mon_pid(void);
+char *mon_nom(void);
 
 #endif

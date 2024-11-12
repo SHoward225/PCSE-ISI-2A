@@ -8,11 +8,9 @@
 #include "ctx_sw.h"
 
 #define TAILLE_PILE 512  // Taille de la pile pour chaque processus
-extern processus_t* proc1_process;
+extern processus_t* processus_actuel;  // Déclaration, pas de définition
 
-
-processus_t* idle_process;
-processus_t* proc1_process;
+// ================================ EXEMPLE A DEUX PROCESSUS =========================================
 
 // Fonction pour initialiser un processus avec les informations fournies
 void init_processus(processus_t* proc, uint32_t pid, char* nom, void (*fonction)(void)) {
@@ -22,6 +20,10 @@ void init_processus(processus_t* proc, uint32_t pid, char* nom, void (*fonction)
 
     // Allouer la pile pour le processus
     proc->pile = (uint32_t*) malloc(TAILLE_PILE * sizeof(uint32_t));
+    if (proc->pile == NULL) {
+        printf("Erreur d'allocation de la pile pour le processus %s\n", nom);
+        return;
+    }
     proc->pile_base = proc->pile;
 
     // Préparer la pile pour la première exécution
@@ -33,18 +35,9 @@ void init_processus(processus_t* proc, uint32_t pid, char* nom, void (*fonction)
     proc->regs.edi = 0;
 
     printf("Processus %s (PID=%u) initialise avec succes.\n", nom, pid);
+    
 }
 
-void idle(void) {
-    printf("[idle] je tente de passer la main a proc1...\n");
-            ctx_sw((uint32_t*)&(idle_process->regs), (uint32_t*)&(proc1_process->regs));  // Passage de idle à proc1
-}
-
-void proc1(void) {
-    printf("[proc1] idle m’a donne la main\n");
-    printf("[proc1] j’arrete le système\n");
-    hlt();  // Arrête le système
-}
 
 // Initialiser les processus idle et proc1
 void init_processus_idle_proc1(void) {
@@ -56,4 +49,79 @@ void init_processus_idle_proc1(void) {
 
     // Initialiser le processus proc1 (PID 1)
     init_processus(proc1_process, 1, "proc1", proc1);
+
+    // Définir idle comme processus initial
+    processus_actuel = idle_process;
+}
+
+
+
+// ----------------------------- Passage dún processus à l´autre ---------------------------------------
+// void idle(void) {
+//     printf("[idle] je tente de passer la main a proc1...\n");
+//             ctx_sw((uint32_t*)&(idle_process->regs), (uint32_t*)&(proc1_process->regs));  // Passage de idle à proc1
+// }
+
+
+// void proc1(void) {
+//     printf("[proc1] idle m’a donne la main\n");
+//     printf("[proc1] j’arrete le système\n");
+//     hlt();  // Arrête le système
+// }
+
+// ============================= Aller et retour entre processus ==============================================
+
+// void idle(void) {
+//     for (int i = 0; i < 3; i++) {
+//         printf("[idle] je tente de passer la main a proc1...\n");
+//          ctx_sw((uint32_t*)&(idle_process->regs), (uint32_t*)&(proc1_process->regs));;
+//         printf("[idle] proc1 m’a redonne la main\n");
+//     }
+//     printf("[idle] je bloque le systeme\n");
+//     hlt();
+// }
+
+// void proc1(void) {
+//     for (;;) {
+//         printf("[proc1] idle m’a donne la main\n");
+//         printf("[proc1] je tente de lui la redonner...\n");
+//          ctx_sw((uint32_t*)&(proc1_process->regs), (uint32_t*)&(idle_process->regs));;
+//     }
+// }
+
+
+// ----------------------------- Ordonnancement selon l´algorithme du Tourniquet -----------------------------
+
+void idle(void){
+    for (;;) {
+        printf("[%s] pid = %i\n", mon_nom(), mon_pid());
+        ordonnance();
+        }
+}
+
+void proc1(void) {
+    for (;;) {
+        printf("[%s] pid = %i\n", mon_nom(), mon_pid());
+        ordonnance();
+    }
+}
+
+
+// Prototypes pour récupérer le PID et le nom du processus en cours
+int32_t mon_pid(void){
+    if (processus_actuel != NULL) {
+        return processus_actuel->pid;
+    } else {
+        printf("Erreur : processus_actuel est NULL\n");
+        return -1; // Valeur de retour d'erreur
+    }
+}
+
+char *mon_nom(void){
+    if (processus_actuel != NULL) {
+        return processus_actuel->nom;
+    } else {
+        printf("Erreur : processus_actuel est NULL\n");
+        return "Inconnu"; // Valeur de retour par défaut
+    }
 }

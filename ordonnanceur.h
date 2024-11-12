@@ -3,11 +3,8 @@
 
 #include "processus.h"
 
-// Table des processus activables
+// Table des processus activablesssss
 extern processus_t* table_processus[2];
-
-// Pointeur vers le processus actuellement élu
-extern processus_t* processus_actuel;
 
 // Prototype de la fonction d'ordonnancement
 void ordonnance(void);
