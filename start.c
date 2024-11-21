@@ -87,10 +87,10 @@ void kernel_start(void)
 
     // =========================  GESTION DES PROCESSUS =========================
 
-
+    // Nettoyer l'écran au démarrage
+    efface_ecran(); 
 
 // ------------------------------------------------------------------------------
-    // efface_ecran();  // Nettoyer l'écran au démarrage
 
     // // Initialisation des processus idle et proc1
     // init_processus_idle_proc1();
@@ -105,10 +105,27 @@ void kernel_start(void)
 
 // ----------------------------------- Test Tourniquet -------------------------------------------
 
-    // Initialisation des processus idle et proc1
-    init_processus_idle_proc1();
+    // // Initialisation des processus idle et proc1
+    // init_processus_idle_proc1();
 
-    // Démarrage du processus par défaut (idle)
+    // // Démarrage du processus par défaut (idle)
+    // idle();
+
+// ------------------------------ Generalisation a N processus --------------------------
+
+    // Créer les processus idle, proc1, proc2, etc.
+    creer_processus(idle, "idle");
+    creer_processus(proc1, "proc1");
+    creer_processus(proc2, "proc2");
+    creer_processus(proc3, "proc3");
+    creer_processus(proc4, "proc4");
+    creer_processus(proc5, "proc5");
+    creer_processus(proc6, "proc6");
+    creer_processus(proc7, "proc7");
+
+    processus_actuel = table_processus[0];
+
+    // Lancer le processus idle comme processus initial
     idle();
 
 }
