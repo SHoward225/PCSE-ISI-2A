@@ -2,6 +2,7 @@
 #include "ecran.h"  // Pour la gestion de l'ecran
 #include "init.h"   // Pour la gestion du temps
 #include "ordonnanceur.h"
+#include <stddef.h>
 
 
 // on peut s'entrainer a utiliser GDB avec ce code de base
@@ -111,21 +112,35 @@ void kernel_start(void)
     // // Démarrage du processus par défaut (idle)
     // idle();
 
-// ------------------------------ Generalisation a N processus --------------------------
+// // ------------------------------ Generalisation a N processus --------------------------
 
-    // Créer les processus idle, proc1, proc2, etc.
-    creer_processus(idle, "idle");
-    creer_processus(proc1, "proc1");
-    creer_processus(proc2, "proc2");
-    creer_processus(proc3, "proc3");
-    creer_processus(proc4, "proc4");
-    creer_processus(proc5, "proc5");
-    creer_processus(proc6, "proc6");
-    creer_processus(proc7, "proc7");
+//     // Créer les processus idle, proc1, proc2, etc.
+//     creer_processus(idle, "idle");
+//     creer_processus(proc1, "proc1");
+//     creer_processus(proc2, "proc2");
+//     creer_processus(proc3, "proc3");
+//     creer_processus(proc4, "proc4");
+//     creer_processus(proc5, "proc5");
+//     creer_processus(proc6, "proc6");
+//     creer_processus(proc7, "proc7");
 
-    processus_actuel = table_processus[0];
+//     processus_actuel = table_processus[0];
 
-    // Lancer le processus idle comme processus initial
+//     // Lancer le processus idle comme processus initial
+//     idle();
+
+// ------------------------------ Utilisation de listes de processus --------------------------
+    
+    // Initialiser les 8 processus
+    init_processus_N();
+
+    // Vérifiez que le processus actuel est bien initialisé
+    if (processus_actuel == NULL) {
+        printf("Erreur critique : processus_actuel est NULL après initialisation !\n");
+        while (1);  // Boucle infinie pour arrêter l'exécution
+    }
+
+    // Démarrer le premier processus (idle)
     idle();
 
 }

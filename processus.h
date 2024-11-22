@@ -58,6 +58,34 @@ typedef struct contexte {
 } contexte_t;
 
 
+// typedef struct processus {
+//     uint32_t pid;
+//     char* nom;
+//     contexte_t regs;
+//     uint32_t* pile;
+//     uint32_t* pile_base;
+//     etat_t etat;
+// } processus_t;
+
+
+// // Fonctions pour initialiser les processus
+// void init_processus(processus_t* proc, uint32_t pid, char* nom, void (*fonction)(void));
+// uint32_t creer_processus(void (*code)(void), char* nom);
+
+// void idle(void);
+// void proc1(void);
+// void proc2(void);
+// void proc3(void);
+// void proc4(void);
+// void proc5(void);
+// void proc6(void);
+// void proc7(void);
+
+// int32_t mon_pid(void);
+// char *mon_nom(void);
+
+// ============== Utilisation de listes de processus =====================
+
 typedef struct processus {
     uint32_t pid;
     char* nom;
@@ -65,27 +93,25 @@ typedef struct processus {
     uint32_t* pile;
     uint32_t* pile_base;
     etat_t etat;
+    struct processus* suiv; // Nouveau champ pour les listes chaînées
 } processus_t;
-
 
 // Fonctions pour initialiser les processus
 void init_processus(processus_t* proc, uint32_t pid, char* nom, void (*fonction)(void));
-uint32_t creer_processus(void (*code)(void), char* nom);
+void init_processus_N(void);
 
-void idle(void);
-void proc1(void);
-void proc2(void);
-void proc3(void);
-void proc4(void);
-void proc5(void);
-void proc6(void);
-void proc7(void);
+
+// Prototypes pour récupérer le PID et le nom du processus actuel
 int32_t mon_pid(void);
 char *mon_nom(void);
 
+int32_t creer_processus(void (*fonction)(void), char* nom);
+void processus_execution(void);
+void idle(void);
 
-// ============== Utilisation de listes de processus =====================
-
+// Processus globaux
+extern processus_t* idle_process;
+extern processus_t* proc1_process;
 
 
 #endif
