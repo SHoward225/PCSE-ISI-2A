@@ -133,7 +133,7 @@ void ordonnance(void) {
     if (processus_actuel == NULL) {
         printf("Erreur : aucun processus activable\n");
     }
-
+    
     // Ajouter l'ancien processus en queue des activables
     ajouter_queue_activables(ancien_processus);
 

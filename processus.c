@@ -375,3 +375,6 @@ char *mon_nom(void) {
         return "Inconnu";
     }
 }
+
+//================================== Ordonnancement préemptif ===========================================
+
