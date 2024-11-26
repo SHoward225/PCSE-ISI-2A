@@ -113,5 +113,7 @@ void idle(void);
 extern processus_t* idle_process;
 extern processus_t* proc1_process;
 
+// ======================== ORDONNANCEMENT PREEMPTIF ===========================
+
 
 #endif

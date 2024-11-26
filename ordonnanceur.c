@@ -3,6 +3,7 @@
 #include "ctx_sw.h"
 #include <stddef.h>
 #include <stdio.h>
+#include "cpu.h" // Pour la manipulation des fonctions outb et inb
 
 
 // // Table des processus contenant des pointeurs vers les structures de processus
@@ -146,3 +147,9 @@ void ordonnance(void) {
 }
 
 
+// ======================== ORDONNANCEMENT PREEMPTIF ===========================
+
+void pit_handler(void) {
+    outb(0x20, 0x20);  // Acknowledge l'interruption au PIC
+    ordonnance();      // Appeler l'ordonnanceur pour changer de processus
+}

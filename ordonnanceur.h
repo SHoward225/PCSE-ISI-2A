@@ -29,5 +29,9 @@ processus_t* retirer_tete_activables(void);
 // Fonction d'ordonnancement
 void ordonnance(void);
 
+// ======================== ORDONNANCEMENT PREEMPTIF ===========================
+
+void pit_handler(void);
+
 
 #endif

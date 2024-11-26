@@ -339,21 +339,21 @@ void init_processus_N(void) {
 }
 
 
-// Exécution des processus
-void processus_execution(void) {
-    for (;;) {
-        printf("[%s] pid = %i\n", mon_nom(), mon_pid());
-        ordonnance();
-    }
-}
+// // Exécution des processus
+// void processus_execution(void) {
+//     for (;;) {
+//         printf("[%s] pid = %i\n", mon_nom(), mon_pid());
+//         ordonnance();
+//     }
+// }
 
-// Fonction idle
-void idle(void) {
-    for (;;) {
-        printf("[%s] pid = %i\n", mon_nom(), mon_pid());
-        ordonnance();
-    }
-}
+// // Fonction idle
+// void idle(void) {
+//     for (;;) {
+//         printf("[%s] pid = %i\n", mon_nom(), mon_pid());
+//         ordonnance();
+//     }
+// }
 
 
 int32_t mon_pid(void) {
@@ -376,5 +376,25 @@ char *mon_nom(void) {
     }
 }
 
-//================================== Ordonnancement préemptif ===========================================
+// ======================== ORDONNANCEMENT PREEMPTIF ===========================
+
+//Fonction proc1,...,proc7
+void processus_execution(void) {
+    for (;;) {
+        printf("[%s] pid = %i\n", mon_nom(), mon_pid());
+        sti();
+        hlt();
+        cli();
+    }
+}
+
+// Fonction idle
+void idle(void){
+    for (;;) {
+        printf("[%s] pid = %i\n", mon_nom(), mon_pid());
+        sti();
+        hlt();
+        cli();
+    }
+}
 

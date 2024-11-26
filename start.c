@@ -89,7 +89,7 @@ void kernel_start(void)
     // =========================  GESTION DES PROCESSUS =========================
 
     // Nettoyer l'écran au démarrage
-    efface_ecran(); 
+    // efface_ecran(); 
 
 // ------------------------------------------------------------------------------
 
@@ -131,17 +131,35 @@ void kernel_start(void)
 
 // ------------------------------ Utilisation de listes de processus --------------------------
     
-    // Initialiser les 8 processus
+    // // Initialiser les 8 processus
+    // init_processus_N();
+
+    // // Vérifiez que le processus actuel est bien initialisé
+    // if (processus_actuel == NULL) {
+    //     printf("Erreur critique : processus_actuel est NULL après initialisation !\n");
+    //     while (1);  // Boucle infinie pour arrêter l'exécution
+    // }
+
+    // // Démarrer le premier processus (idle)
+    // idle();
+
+// ======================== ORDONNANCEMENT PREEMPTIF ===========================
+    
+    efface_ecran();
+
+    // Initialisation de l'horloge (code réutilisé de la gestion du temps)
+    init_system();
+
+    // Initialisation des processus
     init_processus_N();
 
-    // Vérifiez que le processus actuel est bien initialisé
-    if (processus_actuel == NULL) {
-        printf("Erreur critique : processus_actuel est NULL après initialisation !\n");
-        while (1);  // Boucle infinie pour arrêter l'exécution
-    }
+    // Ajout d'`idle` dans la liste des activables
+    ajouter_queue_activables(idle_process);
 
-    // Démarrer le premier processus (idle)
+    // Lancement du processus `idle` (qui activera les interruptions)
     idle();
 
 }
+
+
 

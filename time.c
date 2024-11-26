@@ -1,5 +1,6 @@
 #include "ecran.h"
 #include "cpu.h"
+#include "ordonnanceur.h"
 
 // Variables globales pour stocker le temps écoulé
 static uint32_t heures = 0;
@@ -40,5 +41,10 @@ void tic_PIT(void) {
         // Affiche le temps à une position fixe sur l'écran
         ecrit_temps(temps, 8);  // Appelle la fonction pour afficher le temps
     }
+    
+// ======================== ORDONNANCEMENT PREEMPTIF ===========================
+
+    // Appeler l'ordonnanceur pour passer au processus suivant
+    ordonnance();
 }
 

@@ -42,6 +42,7 @@ void masque_IRQ(uint32_t num_IRQ, bool masque) {
 
 
 void init_system() {
+    
     // Configurer la fréquence du PIT à 50 Hz
     regle_frequence_PIT(50);
 
